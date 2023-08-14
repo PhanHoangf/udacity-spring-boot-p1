@@ -156,14 +156,14 @@
                         </tr>
                         </thead>
                         <tbody>
-                        <tr>
+                        <tr th:each="credential: ${credentials}">
                             <td>
                                 <button type="button" class="btn btn-success">Edit</button>
                                 <a class="btn btn-danger">Delete</a>
                             </td>
-                            <th scope="row">Example Credential URL</th>
-                            <td>Example Credential Username</td>
-                            <td>Example Credential Password</td>
+                            <th scope="row" th:text="${credential.getUrl()}">Example Credential URL</th>
+                            <td th:text="${credential.getUsername()}">Example Credential Username</td>
+<!--                            <td th:text="${credential.getPassword()}">Example Credential Password</td>-->
                         </tr>
                         </tbody>
                     </table>
@@ -180,21 +180,26 @@
                                 </button>
                             </div>
                             <div class="modal-body">
-                                <form action="#" method="POST">
-                                    <input type="hidden" name="credentialId" id="credential-id">
+                                <form th:object="${credential}" th:action="@{/home/addOrUpdateCredential}"
+                                      method="POST">
+                                    <input th:field="*{credentialid}" type="hidden" name="credentialId"
+                                           id="credential-id">
                                     <div class="form-group">
                                         <label for="credential-url" class="col-form-label">URL</label>
-                                        <input type="text" name="url" class="form-control" id="credential-url"
+                                        <input th:field="*{url}" type="text" name="url" class="form-control"
+                                               id="credential-url"
                                                maxlength="100" required>
                                     </div>
                                     <div class="form-group">
                                         <label for="credential-username" class="col-form-label">Username</label>
-                                        <input type="text" name="username" class="form-control" id="credential-username"
+                                        <input th:field="*{username}" type="text" name="username" class="form-control"
+                                               id="credential-username"
                                                maxlength="30" required>
                                     </div>
                                     <div class="form-group">
                                         <label for="credential-password" class="col-form-label">Password</label>
-                                        <input type="text" name="password" class="form-control" id="credential-password"
+                                        <input th:field="*{password_credential}" type="text" name="password" class="form-control"
+                                               id="credential-password"
                                                maxlength="30" required>
                                     </div>
                                     <button id="credentialSubmit" type="submit" class="d-none"></button>

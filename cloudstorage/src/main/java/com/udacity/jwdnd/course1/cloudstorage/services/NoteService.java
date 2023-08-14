@@ -22,7 +22,7 @@ public class NoteService {
         return this.noteMapper.deleteNote(noteId);
     }
 
-    public Note updateNote(Note note) {
+    public Integer updateNote(Note note) {
         return this.noteMapper.update(note);
     }
 

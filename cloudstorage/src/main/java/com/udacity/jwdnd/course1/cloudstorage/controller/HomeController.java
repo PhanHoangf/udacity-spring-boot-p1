@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("/home")
@@ -44,21 +46,32 @@ public class HomeController {
         model.addAttribute("notes", notes);
     }
 
-    @PostMapping()
+    @PostMapping("/addAndUpdateNote")
     public String addNote(
             @ModelAttribute("note") Note note,
             Model model,
             Authentication authentication
     ) {
         User user = userService.getUser(authentication.getName());
-        Note newNote = new Note(null, note.getNotetile(), note.getNotedescription(), user.getUserId());
-        Integer noteId = noteService.createNote(newNote);
+        if (note.getNoteid() == null) {
+            Note newNote = new Note(null, note.getNotetile(), note.getNotedescription(), user.getUserId());
+            Integer noteId = noteService.createNote(newNote);
+            newNote.setNoteid(noteId);
+            notes.add(newNote);
 
-        newNote.setNoteid(noteId);
-        notes.add(newNote);
+        } else {
+            this.noteService.updateNote(note);
+        }
 
-        model.addAttribute("notes", notes);
+        model.addAttribute("notes", noteService.getNotes(user.getUserId()));
 
+        return "redirect:/home";
+    }
+
+    @GetMapping("/deletenote/{noteid}")
+    public String deleteNote(@PathVariable("noteid") Integer noteId) {
+        noteService.deleteNote(noteId);
+        notes = notes.stream().filter(note1 -> !Objects.equals(note1.getNoteid(), noteId)).collect(Collectors.toList());
         return "redirect:/home";
     }
 }

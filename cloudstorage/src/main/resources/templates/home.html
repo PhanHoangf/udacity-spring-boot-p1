@@ -81,8 +81,19 @@
                         <tbody>
                         <tr th:each="note: ${notes}">
                             <td>
-                                <button type="button" class="btn btn-success">Edit</button>
-                                <a class="btn btn-danger">Delete</a>
+                                <button th:data-noteid="${note.getNoteid()}"
+                                        th:data-notetitle="${note.getNotetile()}"
+                                        th:data-notedescription="${note.getNotedescription()}"
+                                        th:onclick="
+                                            showNoteModal(
+                                            this.getAttribute('data-noteid'),
+                                            this.getAttribute('data-notetitle'),
+                                            this.getAttribute('data-notedescription'))
+                                        "
+                                        type="button" class="btn btn-success">Edit
+                                </button>
+                                <a th:href="@{/home/deletenote/{noteid}(noteid=${note.getNoteid()})}"
+                                   class="btn btn-danger">Delete</a>
                             </td>
                             <th scope="row" th:text="${note.getNotetile()}">Example Note Title</th>
                             <td th:text="${note.getNotedescription()}">Example Note Description</td>
@@ -102,8 +113,8 @@
                                 </button>
                             </div>
                             <div class="modal-body">
-                                <form th:object="${note}" th:action="@{/home}" method="POST">
-                                    <input type="hidden" name="noteId" id="note-id">
+                                <form th:object="${note}" th:action="@{/home/addAndUpdateNote}" method="POST">
+                                    <input type="hidden" th:field="*{noteid}" name="noteId" id="note-id">
                                     <div class="form-group">
                                         <label for="note-title" class="col-form-label">Title</label>
                                         <input type="text" th:field="*{notetile}" name="noteTitle" class="form-control"
@@ -111,7 +122,8 @@
                                     </div>
                                     <div class="form-group">
                                         <label for="note-description" class="col-form-label">Description</label>
-                                        <textarea class="form-control" th:field="*{notedescription}" name="noteDescription" id="note-description"
+                                        <textarea class="form-control" th:field="*{notedescription}"
+                                                  name="noteDescription" id="note-description"
                                                   rows="5" maxlength="1000" required></textarea>
                                     </div>
                                     <button id="noteSubmit" type="submit" class="d-none"></button>
@@ -210,6 +222,7 @@
 <script type="text/javascript">
     // For opening the note modal
     function showNoteModal(noteId, noteTitle, noteDescription) {
+        console.log(noteId, noteTitle, noteDescription)
         $('#note-id').val(noteId ? noteId : '');
         $('#note-title').val(noteTitle ? noteTitle : '');
         $('#note-description').val(noteDescription ? noteDescription : '');
@@ -223,6 +236,11 @@
         $('#credential-username').val(username ? username : '');
         $('#credential-password').val(password ? password : '');
         $('#credentialModal').modal('show');
+    }
+
+    // delete note
+    function deleteNote(noteId) {
+        alert(noteId);
     }
 </script>
 </body>

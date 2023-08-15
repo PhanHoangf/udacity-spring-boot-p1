@@ -16,7 +16,7 @@ public class Credential {
             String password,
             Integer userid
     ) {
-        this.credentialid = null;
+        this.credentialid = credentialid;
         this.url = url;
         this.username = username;
         this.salt = salt;

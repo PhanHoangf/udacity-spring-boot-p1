@@ -54,14 +54,16 @@ public class CredentialService {
     }
 
     public Integer updateCredential(Credential credential) {
-        String encodedSalt = hashService.generateSalt();
+        Credential oldCredential = credentialMapper.getCredentialById(credential.getCredentialid());
+
+        String encodedSalt = oldCredential.getSalt();
         String encryptedPassword = encryptionService.encryptValue(credential.getPassword_credential(), encodedSalt);
 
-        Credential updateCredential = new Credential(credential.getCredentialid(), credential.getUrl(), credential.getUsername(), encodedSalt, encryptedPassword, credential.getUserid());
+        Credential updateCredential = new Credential(credential.getCredentialid(), credential.getUrl(), credential.getUsername(), encodedSalt, encryptedPassword, null);
         return credentialMapper.update(updateCredential);
     }
 
     public Integer deleteCredential(Integer credentialid) {
-        return credentialMapper.deleteCredential( credentialid );
+        return credentialMapper.deleteCredential(credentialid);
     }
 }

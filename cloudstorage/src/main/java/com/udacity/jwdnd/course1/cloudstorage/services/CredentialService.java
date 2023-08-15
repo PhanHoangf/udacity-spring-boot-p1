@@ -60,4 +60,8 @@ public class CredentialService {
         Credential updateCredential = new Credential(credential.getCredentialid(), credential.getUrl(), credential.getUsername(), encodedSalt, encryptedPassword, credential.getUserid());
         return credentialMapper.update(updateCredential);
     }
+
+    public Integer deleteCredential(Integer credentialid) {
+        return credentialMapper.deleteCredential( credentialid );
+    }
 }

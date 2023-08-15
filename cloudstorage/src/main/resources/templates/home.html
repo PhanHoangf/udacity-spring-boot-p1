@@ -35,7 +35,7 @@
         <div class="tab-content" id="nav-tabContent">
             <div th:class="${isTabFile} ? 'tab-pane fade show active' : 'tab-pane fade'" id="nav-files" role="tabpanel"
                  aria-labelledby="nav-files-tab">
-                <form action="#" enctype="multipart/form-data" method="POST">
+                <form th:action="@{/home/upload}" enctype="multipart/form-data" method="POST">
                     <div class="container">
                         <div class="row" style="margin: 1em;">
                             <div class="col-sm-2">

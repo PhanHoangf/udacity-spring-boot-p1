@@ -11,7 +11,9 @@ import com.udacity.jwdnd.course1.cloudstorage.services.UserService;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -169,5 +171,17 @@ public class HomeController {
     public String deleteCredential(@PathVariable("credentialid") Integer credentialid) {
         credentialService.deleteCredential(credentialid);
         return "redirect:/home/credentials";
+    }
+
+    @PostMapping("/upload")
+    public String uploadFile(@RequestParam("fileUpload") MultipartFile file) {
+
+        if (file.isEmpty()) {
+            return "redirect:/home";
+        }
+        Long size = file.getSize();
+        String fileName = StringUtils.cleanPath(file.getOriginalFilename());
+        System.out.println(fileName);
+        return "redirect:/home";
     }
 }

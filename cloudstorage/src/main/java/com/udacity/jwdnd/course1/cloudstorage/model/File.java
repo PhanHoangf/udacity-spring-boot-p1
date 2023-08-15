@@ -8,22 +8,32 @@ package com.udacity.jwdnd.course1.cloudstorage.model;
 //    filedata BLOB,
 //    foreign key (userid) references USERS(userid)
 
-import java.sql.Blob;
+
 
 public class File {
-    private Integer fileId;
+    private Integer fileid;
     private String filename;
     private String contenttype;
     private String filesize;
     private Integer userid;
-    private Blob filedata;
 
-    public Integer getFileId() {
-        return fileId;
+    private byte[] filedata;
+
+    public File(Integer fileid, String filename, String contenttype, String filesize, Integer userid, byte[] filedata) {
+        this.fileid = fileid;
+        this.filename = filename;
+        this.contenttype = contenttype;
+        this.filesize = filesize;
+        this.userid = userid;
+        this.filedata = filedata;
     }
 
-    public void setFileId(Integer fileId) {
-        this.fileId = fileId;
+    public Integer getFileid() {
+        return fileid;
+    }
+
+    public void setFileid(Integer fileid) {
+        this.fileid = fileid;
     }
 
     public String getFilename() {
@@ -58,11 +68,11 @@ public class File {
         this.userid = userid;
     }
 
-    public Blob getFiledata() {
+    public byte[] getFiledata() {
         return filedata;
     }
 
-    public void setFiledata(Blob filedata) {
+    public void setFiledata(byte[] filedata) {
         this.filedata = filedata;
     }
 }

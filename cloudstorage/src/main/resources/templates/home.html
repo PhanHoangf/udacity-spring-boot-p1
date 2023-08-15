@@ -158,12 +158,25 @@
                         <tbody>
                         <tr th:each="credential: ${credentials}">
                             <td>
-                                <button type="button" class="btn btn-success">Edit</button>
+                                <button
+                                        th:data-credentialid="${credential.getCredentialid()}"
+                                        th:data-url="${credential.getUrl()}"
+                                        th:data-username="${credential.getUsername()}"
+                                        th:data-password="${@encryptionService.decryptValue(credential.getPassword_credential(), credential.getSalt())}"
+                                        th:onclick="
+                                            showCredentialModal(
+                                            this.getAttribute('data-credentialid'),
+                                            this.getAttribute('data-url'),
+                                            this.getAttribute('data-username'),
+                                            this.getAttribute('data-password'))
+                                        "
+                                        type="button"
+                                        class="btn btn-success">Edit</button>
                                 <a class="btn btn-danger">Delete</a>
                             </td>
                             <th scope="row" th:text="${credential.getUrl()}">Example Credential URL</th>
                             <td th:text="${credential.getUsername()}">Example Credential Username</td>
-<!--                            <td th:text="${credential.getPassword()}">Example Credential Password</td>-->
+                            <td th:text="${credential.getPassword_credential()}">Example Credential Password</td>
                         </tr>
                         </tbody>
                     </table>

@@ -1,5 +1,6 @@
 package com.udacity.jwdnd.course1.cloudstorage;
 
+import Pages.CredentialsPage;
 import Pages.NotesPage;
 import io.github.bonigarcia.wdm.WebDriverManager;
 import org.junit.jupiter.api.*;
@@ -25,6 +26,8 @@ class CloudStorageApplicationTests {
 
     private NotesPage notesPage;
 
+    private CredentialsPage credentialsPage;
+
     @BeforeAll
     static void beforeAll() {
         WebDriverManager.chromedriver().setup();
@@ -34,6 +37,7 @@ class CloudStorageApplicationTests {
     public void beforeEach() {
         this.driver = new ChromeDriver();
         notesPage = new NotesPage(driver);
+        credentialsPage = new CredentialsPage(driver);
     }
 
     @AfterEach
@@ -322,4 +326,98 @@ class CloudStorageApplicationTests {
         Assertions.assertEquals(noteDes3, noteDes.getText());
     }
 
+
+    @Test
+    public void test_CreateCredential_OK() {
+        String credentialUrl = "testUrl";
+        String credentialUsername = "Cre username";
+        String credentialPassword = "Cre password";
+
+        doFullFlowSignUpAndLogin();
+
+        driver.get("http://localhost:" + port + "/home/credentials");
+        credentialsPage.createCredential(credentialUrl, credentialUsername, credentialPassword);
+
+        List<WebElement> credentialUrls = credentialsPage.getResCredentialUrls();
+        List<WebElement> credentialUsernames = credentialsPage.getResCredentialUsernames();
+
+        String actualUsername = credentialUsernames.get(0).getText();
+        String actualCredentialUrl = credentialUrls.get(0).getText();
+
+        Assertions.assertEquals(actualCredentialUrl, credentialUrl);
+        Assertions.assertEquals(actualUsername, credentialUsername);
+
+        //Viewable password
+        WebDriverWait webDriverWait = new WebDriverWait(driver, 2);
+        webDriverWait.until(ExpectedConditions.visibilityOfElementLocated(By.id("edit-credential-btn")));
+
+        credentialsPage.getEditCredentialBtn().get(0).click();
+        webDriverWait.until(ExpectedConditions.visibilityOfElementLocated(By.id("credential-url")));
+
+        String password = credentialsPage.getCredentialPasswordInput().getAttribute("value");
+        Assertions.assertEquals(password, credentialPassword);
+    }
+
+    @Test
+    public void test_UpdateCredential_OK() {
+        String credentialUrl = "testUrl";
+        String credentialUsername = "Cre username";
+        String credentialPassword = "Cre password";
+
+        String updateCredentialUrl = "updated url";
+        String updateCredentialUsername = "updated username";
+        String updateCredentialPassword = "updated password";
+
+        doFullFlowSignUpAndLogin();
+
+        driver.get("http://localhost:" + port + "/home/credentials");
+        credentialsPage.createCredential(credentialUrl, credentialUsername, credentialPassword);
+
+
+        WebDriverWait webDriverWait = new WebDriverWait(driver, 2);
+        webDriverWait.until(ExpectedConditions.visibilityOfElementLocated(By.id("edit-credential-btn")));
+
+        credentialsPage.getEditCredentialBtn().get(0).click();
+
+        credentialsPage.updateCredential(updateCredentialUrl, updateCredentialUsername, updateCredentialPassword);
+
+        List<WebElement> credentialUrls = credentialsPage.getResCredentialUrls();
+        List<WebElement> credentialUsernames = credentialsPage.getResCredentialUsernames();
+
+        String actualUsername = credentialUsernames.get(0).getText();
+        String actualCredentialUrl = credentialUrls.get(0).getText();
+
+        Assertions.assertEquals(actualCredentialUrl, updateCredentialUrl);
+        Assertions.assertEquals(actualUsername, updateCredentialUsername);
+
+        credentialsPage.getEditCredentialBtn().get(0).click();
+        webDriverWait.until(ExpectedConditions.visibilityOfElementLocated(By.id("credential-url")));
+
+        String password = credentialsPage.getCredentialPasswordInput().getAttribute("value");
+        Assertions.assertEquals(password, updateCredentialPassword);
+    }
+
+    @Test
+    public void test_DeleteCredential_OK() {
+        String credentialUrl = "testUrl";
+        String credentialUsername = "Cre username";
+        String credentialPassword = "Cre password";
+
+        String credentialUrl2 = "testUrl2";
+        String credentialUsername2 = "Cre username2";
+        String credentialPassword2 = "Cre password2";
+
+        doFullFlowSignUpAndLogin();
+
+        driver.get("http://localhost:" + port + "/home/credentials");
+        credentialsPage.createCredential(credentialUrl, credentialUsername, credentialPassword);
+        credentialsPage.createCredential(credentialUrl2, credentialUsername2, credentialPassword2);
+
+        credentialsPage.getDeleteCredentialBtn().get(0).click();
+        List<WebElement> credentialUrls = driver.findElements(By.id("res-credential-url"));
+
+        for (WebElement url : credentialUrls) {
+            Assertions.assertNotEquals(credentialUrl, url.getText());
+        }
+    }
 }

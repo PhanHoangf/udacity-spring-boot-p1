@@ -175,7 +175,7 @@ public class HomeController {
         return "redirect:/home/credentials";
     }
 
-    @GetMapping("/deletenote/{noteid}")
+    @DeleteMapping("/deletenote/{noteid}")
     public String deleteNote(@PathVariable("noteid") Integer noteId) {
         noteService.deleteNote(noteId);
         notes = notes.stream()

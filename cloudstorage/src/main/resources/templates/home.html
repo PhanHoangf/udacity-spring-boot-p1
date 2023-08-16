@@ -19,7 +19,7 @@
         <nav style="clear: right;">
             <div class="nav nav-tabs" id="nav-tab" role="tablist">
                 <a th:class="${isTabFile} ? 'nav-item nav-link active' : 'nav-item nav-link'" id="nav-files-tab"
-                   th:href="@{home}"
+                   th:href="@{/home/files}"
                    aria-controls="nav-files" th:aria-selected="${isTabFile} ? 'true' : 'false'">Files</a>
 
                 <a th:class="${isTabNote} ? 'nav-item nav-link active' : 'nav-item nav-link'" id="nav-notes-tab"
@@ -59,12 +59,17 @@
                         </tr>
                         </thead>
                         <tbody>
-                        <tr>
+                        <tr th:each="file : ${files}">
                             <td>
-                                <a target="_blank" class="btn btn-success">View</a>
-                                <a class="btn btn-danger">Delete</a>
+                                <a
+                                        th:href="@{/home/download/{filename}(filename=${file.getFilename()})}"
+                                        class="btn btn-success">View</a>
+                                <form style="display: inline-block" th:method="DELETE"
+                                      th:action="@{/home/deletefile/{fileid}(fileid=${file.getFileid()})}">
+                                    <button type="submit" class="btn btn-danger">Delete</button>
+                                </form>
                             </td>
-                            <th scope="row">ExampleFile.txt</th>
+                            <th scope="row" th:text="${file.getFilename()}"></th>
                         </tr>
                         </tbody>
                     </table>
@@ -245,6 +250,7 @@
         </div>
     </div>
 </div>
+<div class="alert alert-danger" th:text="${textAlert}" th:if="${isShowAlert}" role="alert">lertttt</div>
 
 <script th:src="@{/js/jquery-slim.min.js}"></script>
 <script th:src="@{/js/popper.min.js}"></script>

@@ -13,6 +13,7 @@ import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -81,8 +82,8 @@ public class HomeController {
 
         model.addAttribute("files", files);
 
-        model.addAttribute("isShowAlert", isShowAlert);
-        model.addAttribute("textAlert", alertText);
+//        model.addAttribute("isShowAlert", isShowAlert);
+//        model.addAttribute("textAlert", alertText);
 
         return "home";
     }
@@ -98,7 +99,7 @@ public class HomeController {
         model.addAttribute("isTabCredential", false);
         model.addAttribute("isTabNote", true);
         model.addAttribute("isTabFile", false);
-        OffAlert(model);
+//        OffAlert(model);
         return "home";
     }
 
@@ -114,7 +115,7 @@ public class HomeController {
         model.addAttribute("isTabCredential", true);
         model.addAttribute("isTabNote", false);
         model.addAttribute("isTabFile", false);
-        OffAlert(model);
+//        OffAlert(model);
         return "home";
     }
 
@@ -141,7 +142,8 @@ public class HomeController {
     public String addNote(
             @ModelAttribute("note") Note note,
             Model model,
-            Authentication authentication
+            Authentication authentication,
+            RedirectAttributes redirectAttributes
     ) {
         User user = userService.getUser(authentication.getName());
         if (note.getNoteid() == null) {
@@ -150,8 +152,14 @@ public class HomeController {
             newNote.setNoteid(noteId);
             notes.add(newNote);
 
+            redirectAttributes.addFlashAttribute("showAlertPrimary", true);
+            redirectAttributes.addFlashAttribute("textAlert", "Add note success");
+
         } else {
             this.noteService.updateNote(note);
+
+            redirectAttributes.addFlashAttribute("showAlertPrimary", true);
+            redirectAttributes.addFlashAttribute("textAlert", "Update note success");
         }
 
         model.addAttribute("notes", noteService.getNotes(user.getUserId()));
@@ -163,24 +171,36 @@ public class HomeController {
     public String addOrUpdateCredential(
             @ModelAttribute("credential") Credential credential,
             Model model,
-            Authentication authentication
+            Authentication authentication,
+            RedirectAttributes redirectAttributes
     ) {
         User user = userService.getUser(authentication.getName());
         if (credential.getCredentialid() == null) {
             credentialService.insertCredential(credential, user.getUsername());
+
+            redirectAttributes.addFlashAttribute("showAlertPrimary", true);
+            redirectAttributes.addFlashAttribute("textAlert", "Add credential success");
+
         } else {
             credentialService.updateCredential(credential);
+
+            redirectAttributes.addFlashAttribute("showAlertPrimary", true);
+            redirectAttributes.addFlashAttribute("textAlert", "Update credential success");
         }
 
         return "redirect:/home/credentials";
     }
 
     @DeleteMapping("/deletenote/{noteid}")
-    public String deleteNote(@PathVariable("noteid") Integer noteId) {
+    public String deleteNote(@PathVariable("noteid") Integer noteId, RedirectAttributes redirectAttributes) {
         noteService.deleteNote(noteId);
         notes = notes.stream()
                 .filter(note1 -> !Objects.equals(note1.getNoteid(), noteId))
                 .collect(Collectors.toList());
+
+        redirectAttributes.addFlashAttribute("showAlertPrimary", true);
+        redirectAttributes.addFlashAttribute("textAlert", "Delete note success");
+
         return "redirect:/home/notes";
     }
 
@@ -188,18 +208,26 @@ public class HomeController {
     public ResponseEntity<Resource> downloadFile(
             @PathVariable("filename") String filename
     ) {
-       return this.fileService.downloadFile(filename);
+        return this.fileService.downloadFile(filename);
     }
 
     @DeleteMapping("/deletecredential/{credentialid}")
-    public String deleteCredential(@PathVariable("credentialid") Integer credentialid) {
+    public String deleteCredential(@PathVariable("credentialid") Integer credentialid, RedirectAttributes redirectAttributes) {
         credentialService.deleteCredential(credentialid);
+
+        redirectAttributes.addFlashAttribute("showAlertPrimary", true);
+        redirectAttributes.addFlashAttribute("textAlert", "Delete credential success");
+
         return "redirect:/home/credentials";
     }
 
     @DeleteMapping("/deletefile/{fileid}")
-    public String deletefile(@PathVariable("fileid") Integer fileid) {
+    public String deletefile(@PathVariable("fileid") Integer fileid, RedirectAttributes redirectAttributes) {
         fileService.deleteFile(fileid);
+
+        redirectAttributes.addFlashAttribute("showAlertPrimary", true);
+        redirectAttributes.addFlashAttribute("textAlert", "Delete file success");
+
         return "redirect:/home/files";
     }
 
@@ -207,7 +235,8 @@ public class HomeController {
     public String uploadFile(
             @RequestParam("fileUpload") MultipartFile file,
             Authentication authentication,
-            Model model
+            Model model,
+            RedirectAttributes redirectAttributes
     ) throws IOException {
         User user = userService.getUser(authentication.getName());
 
@@ -220,18 +249,19 @@ public class HomeController {
         String fileName = StringUtils.cleanPath(file.getOriginalFilename());
 
         if (fileService.isFileExists(fileName)) {
-            alertText = "Duplicate file name";
-            isShowAlert = true;
-            return "redirect:/home";
-        } else {
-            OffAlert(model);
+            redirectAttributes.addFlashAttribute("showAlertDanger", true);
+            redirectAttributes.addFlashAttribute("textAlert", "Duplicate file name");
+            return "redirect:/home/files";
         }
 
         File newFile = new File(null, fileName, contenttype, size.toString(), user.getUserId(), file.getBytes());
 
         fileService.insertFile(newFile);
 
-        return "redirect:/home";
+        redirectAttributes.addFlashAttribute("showAlertPrimary", true);
+        redirectAttributes.addFlashAttribute("textAlert", "Upload file success");
+
+        return "redirect:/home/files";
     }
 
     private void OnAlert(Model model) {

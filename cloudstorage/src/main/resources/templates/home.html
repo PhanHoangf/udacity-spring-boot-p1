@@ -107,7 +107,7 @@
                                         type="button" class="btn btn-success">Edit
                                 </button>
                                 <form style="display: inline-block" th:method="DELETE"
-                                      th:href="@{/home/deletenote/{noteid}(noteid=${note.getNoteid()})}">
+                                      th:action="@{/home/deletenote/{noteid}(noteid=${note.getNoteid()})}">
                                     <button id="delete-note-btn" type="submit" class="btn btn-danger">Delete</button>
                                 </form>
                             </td>
@@ -257,7 +257,8 @@
         </div>
     </div>
 </div>
-<div class="alert alert-danger" th:text="${textAlert}" th:if="${isShowAlert}" role="alert">lertttt</div>
+<div class="alert alert-danger" th:text="${textAlert}" th:if="${showAlertDanger}" role="alert">lertttt</div>
+<div class="alert alert-primary" th:text="${textAlert}" th:if="${showAlertPrimary}" role="alert">lertttt</div>
 
 <script th:src="@{/js/jquery-slim.min.js}"></script>
 <script th:src="@{/js/popper.min.js}"></script>
